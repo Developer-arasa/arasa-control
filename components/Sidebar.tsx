@@ -1,6 +1,6 @@
 // components/Sidebar.tsx
 import Link from "next/link";
-import { LayoutDashboard, Package, Briefcase, Calendar } from "lucide-react";
+import { LayoutDashboard, Package, Briefcase, Calendar, UserLock } from "lucide-react";
 
 export default function Sidebar() {
   return (
@@ -22,6 +22,9 @@ export default function Sidebar() {
         </Link>
         <Link href="/program" className="flex items-center gap-4 px-4 py-3.5 rounded-xl hover:bg-[#E5D3B3]/20 transition-colors font-medium text-sm tracking-wide">
           <Calendar size={20} className="text-[#4A0E17]" /> Program
+        </Link>
+        <Link href="/tour-leader" className="flex items-center gap-4 px-4 py-3.5 rounded-xl hover:bg-[#E5D3B3]/20 transition-colors font-medium text-sm tracking-wide">
+          <UserLock size={20} className="text-[#4A0E17]" /> Tour Leader
         </Link>
       </nav>
     </aside>
