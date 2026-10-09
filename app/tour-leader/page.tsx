@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { Playfair_Display } from "next/font/google";
 import { supabase } from "@/lib/supabase";
-import { Users, Plus, UserCheck, UserX, Building2, Phone } from "lucide-react";
-import { registerTourLeader, toggleStatusTL } from "./actions";
+import { Users, Plus, UserCheck, UserX, Building2, Phone, Edit2, Trash2, History, X } from "lucide-react";
+import { registerTourLeader, toggleStatusTL, editTourLeader, deleteTourLeader } from "./actions";
 
 const playfair = Playfair_Display({ subsets: ["latin"] });
 
@@ -12,15 +12,13 @@ export default function TLControlPage() {
   const [leaders, setLeaders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [editMode, setEditMode] = useState<{ active: boolean; data: any }>({ active: false, data: null });
+  const [historyModal, setHistoryModal] = useState<{ isOpen: boolean; tlName: string; sessions: any[] }>({ isOpen: false, tlName: "", sessions: [] });
 
   const fetchLeaders = async () => {
     try {
-      const { data, error } = await supabase
-        .from("tour_leaders")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
+      const { data } = await supabase.from("tour_leaders").select("*").order("created_at", { ascending: false });
       setLeaders(data || []);
     } catch (err) {
       console.error("Error fetching TL:", err);
@@ -29,161 +27,189 @@ export default function TLControlPage() {
     }
   };
 
-  useEffect(() => {
-    fetchLeaders();
-  }, []);
+  useEffect(() => { fetchLeaders(); }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
     const formData = new FormData(e.currentTarget);
-    const result = await registerTourLeader(formData);
     
+    let result;
+    if (editMode.active) {
+      result = await editTourLeader(editMode.data.id, formData);
+    } else {
+      result = await registerTourLeader(formData);
+    }
+
     if (result.success) {
-      alert("Tour Leader berhasil didaftarkan!");
+      alert(editMode.active ? "Data TL diperbarui!" : "Tour Leader berhasil didaftarkan!");
       (e.target as HTMLFormElement).reset();
-      fetchLeaders(); // refresh list otomatis
+      setEditMode({ active: false, data: null });
+      fetchLeaders();
     } else {
       alert(result.error);
     }
-    
     setIsSubmitting(false);
   };
 
-  const handleToggleStatus = async (id: string, currentStatus: number) => {
-    const confirmMsg = currentStatus === 1 
-      ? "Yakin ingin menonaktifkan akun ini?" 
-      : "Yakin ingin mengaktifkan kembali akun ini?";
-      
-    if (!window.confirm(confirmMsg)) return;
-
-    const result = await toggleStatusTL(id, currentStatus);
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Yakin ingin menghapus TL ini?")) return;
+    const result = await deleteTourLeader(id);
     if (result.success) {
+      if (result.note) alert(result.note);
       fetchLeaders();
     } else {
       alert(result.error);
     }
   };
 
+  const handleToggleStatus = async (id: string, currentStatus: number) => {
+    if (!window.confirm(currentStatus === 1 ? "Nonaktifkan akun ini?" : "Aktifkan kembali akun ini?")) return;
+    const result = await toggleStatusTL(id, currentStatus);
+    if (result.success) fetchLeaders();
+  };
+
+  const viewHistory = async (tlId: string, tlName: string) => {
+    try {
+      const { data } = await supabase.from('tour_sessions').select('*').eq('tl_id', tlId).order('created_at', { ascending: false });
+      setHistoryModal({ isOpen: true, tlName, sessions: data || [] });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 bg-[#FDFBF7] min-h-screen">
-      <div className="mb-8">
-        <h1 className={`${playfair.className} text-3xl sm:text-4xl font-bold text-[#2B1B17] mb-2`}>
-          Manajemen Tour Leader
-        </h1>
-        <p className="text-sm text-[#2B1B17]/60 font-light">
-          Daftarkan akun TL baru atau kelola akses agen B2B yang sudah ada.
-        </p>
+    <div className="w-full max-w-7xl mx-auto p-4 sm:p-8 bg-[#FDFBF7] min-h-screen">
+      <div className="mb-6 sm:mb-8 mt-4 sm:mt-0">
+        <h1 className={`${playfair.className} text-2xl sm:text-3xl font-bold text-[#4A0E17] mb-2`}>Manajemen Tour Leader</h1>
+        <p className="text-xs sm:text-sm text-[#2B1B17]/60 font-light">Daftarkan akun TL baru, edit data, dan pantau riwayat rombongan.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Form Register */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="lg:col-span-1">
-          <div className="bg-white border border-[#E5D3B3]/60 p-6 rounded-3xl shadow-sm">
-            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#E5D3B3]/40">
-              <Plus size={20} className="text-[#4A0E17]" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-[#2B1B17]">
-                Daftar TL Baru
-              </h2>
+          <div className="bg-white border border-[#E5D3B3]/60 p-5 sm:p-6 rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-[#E5D3B3]/40">
+              <div className="flex items-center gap-2">
+                {editMode.active ? <Edit2 size={18} className="text-[#4A0E17]" /> : <Plus size={18} className="text-[#4A0E17]" />}
+                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#2B1B17]">
+                  {editMode.active ? "Edit Data TL" : "Daftar TL Baru"}
+                </h2>
+              </div>
+              {editMode.active && (
+                <button onClick={() => setEditMode({ active: false, data: null })} className="text-xs text-red-600 font-bold hover:underline">Batal</button>
+              )}
             </div>
-
+            
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-[#2B1B17]/60 mb-1.5">Nama Lengkap</label>
-                <input type="text" name="name" required className="w-full px-4 py-3 rounded-xl border border-[#E5D3B3] outline-none focus:border-[#4A0E17] text-sm bg-white" placeholder="Contoh: Aksara Putra Semesta" />
+                <input type="text" name="name" defaultValue={editMode.data?.name || ""} required className="w-full px-4 py-3 rounded-xl border border-[#E5D3B3] text-sm bg-white outline-none focus:border-[#4A0E17]" />
               </div>
-              
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-[#2B1B17]/60 mb-1.5">Biro / Agen</label>
-                <input type="text" name="agencyName" className="w-full px-4 py-3 rounded-xl border border-[#E5D3B3] outline-none focus:border-[#4A0E17] text-sm bg-white" placeholder="Contoh: Wonderfull Indonesia" />
+                <input type="text" name="agencyName" defaultValue={editMode.data?.agency_name || ""} className="w-full px-4 py-3 rounded-xl border border-[#E5D3B3] text-sm bg-white outline-none focus:border-[#4A0E17]" />
               </div>
-
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-[#2B1B17]/60 mb-1.5">No. WhatsApp</label>
-                <input type="text" name="phone" className="w-full px-4 py-3 rounded-xl border border-[#E5D3B3] outline-none focus:border-[#4A0E17] text-sm bg-white" placeholder="Contoh: 0812345678" />
+                <input type="text" name="phone" defaultValue={editMode.data?.phone || ""} className="w-full px-4 py-3 rounded-xl border border-[#E5D3B3] text-sm bg-white outline-none focus:border-[#4A0E17]" />
               </div>
-
-              <div className="pt-2">
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#2B1B17]/60 mb-1.5">Username (Untuk Login)</label>
-                <input type="text" name="username" required className="w-full px-4 py-3 rounded-xl border border-[#E5D3B3] outline-none focus:border-[#4A0E17] text-sm bg-white" placeholder="tanpa_spasi" />
-              </div>
-
+              
+              {!editMode.active && (
+                <div className="pt-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-[#2B1B17]/60 mb-1.5">Username (Login)</label>
+                  <input type="text" name="username" required className="w-full px-4 py-3 rounded-xl border border-[#E5D3B3] text-sm bg-white outline-none focus:border-[#4A0E17]" />
+                </div>
+              )}
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#2B1B17]/60 mb-1.5">PIN (6 Digit)</label>
-                <input type="text" name="pin" required maxLength={6} pattern="\d{6}" className="w-full px-4 py-3 rounded-xl border border-[#E5D3B3] outline-none focus:border-[#4A0E17] text-sm bg-white tracking-[0.3em] font-medium" placeholder="123456" />
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#2B1B17]/60 mb-1.5">PIN (6 Digit) {editMode.active && "(Opsional)"}</label>
+                <input type="text" name="pin" maxLength={6} pattern="\d{6}" required={!editMode.active} className="w-full px-4 py-3 rounded-xl border border-[#E5D3B3] text-sm tracking-[0.3em] font-medium bg-white outline-none focus:border-[#4A0E17]" placeholder={editMode.active ? "Kosongkan jika tidak diubah" : "123456"} />
               </div>
 
-              <button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="w-full mt-4 bg-[#4A0E17] text-[#FDFBF7] py-3.5 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#2B1B17] transition-all disabled:opacity-50"
-              >
-                {isSubmitting ? "Menyimpan..." : "Daftarkan TL"}
+              <button type="submit" disabled={isSubmitting} className="w-full mt-4 bg-[#4A0E17] text-[#FDFBF7] py-3.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-widest hover:bg-[#2B1B17] transition-all disabled:opacity-50">
+                {isSubmitting ? "Menyimpan..." : editMode.active ? "Simpan Perubahan" : "Daftarkan TL"}
               </button>
             </form>
           </div>
         </div>
 
-        {/* List TL */}
         <div className="lg:col-span-2">
-          <div className="bg-white border border-[#E5D3B3]/60 rounded-3xl shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-[#E5D3B3]/40 bg-[#FDFBF7]/30">
+          <div className="bg-white border border-[#E5D3B3]/60 rounded-2xl shadow-sm overflow-hidden h-full">
+            <div className="flex items-center justify-between p-5 border-b border-[#E5D3B3]/40 bg-[#FDFBF7]/30">
               <div className="flex items-center gap-2">
-                <Users size={20} className="text-[#4A0E17]" />
-                <h2 className="text-sm font-bold uppercase tracking-widest text-[#2B1B17]">
-                  Daftar Agen & TL
-                </h2>
+                <Users size={18} className="text-[#4A0E17]" />
+                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#2B1B17]">Daftar Agen & TL</h2>
               </div>
             </div>
-
-            <div className="p-0">
+            
+            <div className="divide-y divide-[#E5D3B3]/30 overflow-x-auto min-w-[300px]">
               {loading ? (
                 <div className="p-8 text-center text-[#2B1B17]/40 text-sm">Memuat data...</div>
-              ) : leaders.length === 0 ? (
-                <div className="p-8 text-center text-[#2B1B17]/40 text-sm">Belum ada Tour Leader yang didaftarkan.</div>
-              ) : (
-                <div className="divide-y divide-[#E5D3B3]/30">
-                  {leaders.map((tl) => (
-                    <div key={tl.id} className="p-4 sm:p-6 hover:bg-[#FDFBF7]/50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <h3 className="text-sm font-bold text-[#2B1B17]">{tl.name}</h3>
-                          <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md ${
-                            tl.is_active === 1 ? 'bg-[#00AA5B]/10 text-[#00AA5B]' : 'bg-[#4A0E17]/10 text-[#4A0E17]'
-                          }`}>
-                            {tl.is_active === 1 ? 'Aktif' : 'Nonaktif'}
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#2B1B17]/60 mt-2">
-                          <span className="flex items-center gap-1.5"><Building2 size={12}/> {tl.agency_name || '-'}</span>
-                          <span className="flex items-center gap-1.5"><Phone size={12}/> {tl.phone || '-'}</span>
-                          <span className="font-mono bg-[#E5D3B3]/20 px-1.5 py-0.5 rounded text-[10px]">@{tl.username}</span>
-                        </div>
-                      </div>
-                      
-                      <button 
-                        onClick={() => handleToggleStatus(tl.id, tl.is_active)}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
-                          tl.is_active === 1 
-                            ? 'border border-[#4A0E17]/20 text-[#4A0E17] hover:bg-[#4A0E17]/10' 
-                            : 'border border-[#00AA5B]/20 text-[#00AA5B] hover:bg-[#00AA5B]/10'
-                        }`}
-                      >
-                        {tl.is_active === 1 ? (
-                          <><UserX size={14} /> Cabut Akses</>
-                        ) : (
-                          <><UserCheck size={14} /> Aktifkan</>
-                        )}
-                      </button>
+              ) : leaders.map((tl) => (
+                <div key={tl.id} className="p-4 sm:p-5 hover:bg-[#FDFBF7]/50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-3 mb-1">
+                      <h3 className="text-sm font-bold text-[#2B1B17]">{tl.name}</h3>
+                      <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md ${tl.is_active === 1 ? 'bg-[#00AA5B]/10 text-[#00AA5B]' : 'bg-[#4A0E17]/10 text-[#4A0E17]'}`}>
+                        {tl.is_active === 1 ? 'Aktif' : 'Nonaktif'}
+                      </span>
                     </div>
-                  ))}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-[#2B1B17]/60 mt-1.5">
+                      <span className="flex items-center gap-1.5"><Building2 size={12}/> {tl.agency_name || '-'}</span>
+                      <span className="flex items-center gap-1.5"><Phone size={12}/> {tl.phone || '-'}</span>
+                      <span className="font-mono bg-[#E5D3B3]/20 px-1.5 py-0.5 rounded text-[10px]">@{tl.username}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => viewHistory(tl.id, tl.name)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors shrink-0">
+                      <History size={14} /> Riwayat
+                    </button>
+                    <button onClick={() => setEditMode({ active: true, data: tl })} className="p-2 rounded-lg text-[#2B1B17]/40 hover:text-[#4A0E17] hover:bg-[#4A0E17]/10 transition-colors">
+                      <Edit2 size={16} />
+                    </button>
+                    <button onClick={() => handleToggleStatus(tl.id, tl.is_active)} className="p-2 rounded-lg text-[#2B1B17]/40 hover:text-[#00AA5B] hover:bg-[#00AA5B]/10 transition-colors">
+                      {tl.is_active === 1 ? <UserX size={16} /> : <UserCheck size={16} />}
+                    </button>
+                    <button onClick={() => handleDelete(tl.id)} className="p-2 rounded-lg text-[#2B1B17]/40 hover:text-red-600 hover:bg-red-50 transition-colors">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         </div>
       </div>
+
+      {historyModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B1B17]/60 backdrop-blur-sm px-4">
+          <div className="bg-[#FDFBF7] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between p-5 border-b border-[#E5D3B3]/40 bg-white">
+              <h2 className={`${playfair.className} text-lg font-bold text-[#4A0E17] truncate pr-4`}>Riwayat: {historyModal.tlName}</h2>
+              <button onClick={() => setHistoryModal({ isOpen: false, tlName: "", sessions: [] })} className="p-1.5 bg-[#E5D3B3]/10 text-[#2B1B17]/60 hover:text-[#4A0E17] rounded-full shrink-0 transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5 overflow-y-auto divide-y divide-[#E5D3B3]/30 bg-white">
+              {historyModal.sessions.length === 0 ? (
+                <p className="text-center text-sm text-[#2B1B17]/50 py-10">Belum ada riwayat sesi.</p>
+              ) : (
+                historyModal.sessions.map(s => (
+                  <div key={s.id} className="py-3.5 flex justify-between items-center">
+                    <div>
+                      <p className="font-bold text-sm text-[#2B1B17]">{s.group_name || "Tanpa Nama"}</p>
+                      <p className="text-[10px] text-[#2B1B17]/60 mt-0.5">{new Date(s.created_at).toLocaleDateString('id-ID')}</p>
+                    </div>
+                    <span className={`px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest ${s.status === 'active' ? 'bg-[#00AA5B]/10 text-[#00AA5B]' : 'bg-gray-100 text-gray-500'}`}>
+                      {s.status === 'active' ? 'Berjalan' : 'Selesai'}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

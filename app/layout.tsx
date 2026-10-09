@@ -1,4 +1,3 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
@@ -19,9 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={`${inter.variable} ${playfair.variable} font-sans bg-[#F5F0E6] text-[#2B1B17] flex h-screen overflow-hidden`}>
+      <body className={`${inter.variable}${playfair.variable} font-sans bg-[#FDFBF7] text-[#2B1B17] flex flex-col lg:flex-row h-screen overflow-hidden`}>
         <Sidebar />
-        <main className="flex-1 overflow-y-auto bg-[#FDFBF7]">
+        <main className="flex-1 overflow-y-auto bg-[#FDFBF7] relative w-full">
           {children}
         </main>
       </body>
