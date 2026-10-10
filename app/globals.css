@@ -1,52 +1,51 @@
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent;
+:root {
+  --background: #f5f5f5;
+  --surface: #ffffff;
+  --surface-muted: #fafafa;
+  --foreground: #171717;
+  --foreground-muted: #737373;
+  --border: #e5e5e5;
+  --border-strong: #d4d4d4;
+  --accent: #171717;
 }
 
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+
 body {
-  background-color: #FDFBF7;
-  color: #2B1B17;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
   overflow-x: hidden;
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-open-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #FDFBF7;
-}
-::-webkit-scrollbar-thumb {
-  background: #E5D3B3;
-  border-radius: 20px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #4A0E17;
+button, a, input, select, textarea {
+  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease,
+    box-shadow 180ms ease, opacity 180ms ease, transform 180ms ease;
 }
 
-/* Selection Color */
-::selection {
-  background-color: #4A0E17;
-  color: #FDFBF7;
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
 }
 
-/* Hide scrollbar for specific elements */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+::selection { background: var(--foreground); color: #fff; }
 
-/* Smooth transition for standard interactive elements */
-a, button {
-  -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--surface-muted); }
+::-webkit-scrollbar-thumb { background: #a3a3a3; border: 2px solid var(--surface-muted); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #525252; }
+
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }

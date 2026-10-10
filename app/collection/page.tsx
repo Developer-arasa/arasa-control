@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Playfair_Display } from "next/font/google";
 import { Check, X, Edit2, Plus, Trash2, X as CloseIcon, UploadCloud, Search, ArrowUpDown } from "lucide-react";
-
-const playfair = Playfair_Display({ subsets: ["latin"] });
 
 const CATEGORIES = ["Onde-Onde", "Pastry & Cookies", "Cakes & Lapis", "Savory Snack"];
 
@@ -193,12 +190,12 @@ export default function CollectionPage() {
     <div className="p-8 max-w-7xl mx-auto relative">
       <div className="flex justify-between items-end mb-10">
         <div>
-          <h1 className={`${playfair.className} text-3xl font-bold text-[#4A0E17] mb-2`}>The Collection</h1>
-          <p className="text-[#2B1B17]/60">Kelola katalog produk, status rilis, dan otomatisasi upload.</p>
+          <h1 className="text-3xl font-bold text-neutral-950 mb-2">The Collection</h1>
+          <p className="text-[#404040]/60">Kelola katalog produk, status rilis, dan otomatisasi upload.</p>
         </div>
         <button 
           onClick={openAddModal}
-          className="flex items-center gap-2 bg-[#4A0E17] text-[#FDFBF7] px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#2B1B17] transition-colors shadow-md"
+          className="flex items-center gap-2 bg-neutral-950 text-white px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-neutral-700 transition-colors shadow-md"
         >
           <Plus size={18} /> Tambah Produk
         </button>
@@ -211,70 +208,70 @@ export default function CollectionPage() {
             placeholder="Cari nama produk..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-white border border-[#E5D3B3] rounded-xl outline-none focus:border-[#4A0E17] text-sm shadow-sm"
+            className="w-full pl-10 pr-4 py-3 bg-white border border-[#E5E5E5] rounded-xl outline-none focus:border-[#171717] text-sm shadow-sm"
           />
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2B1B17]/40" />
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#404040]/40" />
         </div>
       </div>
 
-      <div className="bg-white border border-[#E5D3B3]/40 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-[#E5E5E5]/40 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto min-h-[300px]">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-[#F5F0E6] text-[#2B1B17] text-xs uppercase tracking-widest border-b border-[#E5D3B3]/40">
-                <th className="p-5 font-bold cursor-pointer hover:bg-[#E5D3B3]/20 transition-colors" onClick={() => handleSort('name')}>
-                  <div className="flex items-center gap-2">Produk <ArrowUpDown size={14} className="text-[#2B1B17]/40" /></div>
+              <tr className="bg-[#F5F5F5] text-[#404040] text-xs uppercase tracking-widest border-b border-[#E5E5E5]/40">
+                <th className="p-5 font-bold cursor-pointer hover:bg-[#E5E5E5]/20 transition-colors" onClick={() => handleSort('name')}>
+                  <div className="flex items-center gap-2">Produk <ArrowUpDown size={14} className="text-[#404040]/40" /></div>
                 </th>
-                <th className="p-5 font-bold cursor-pointer hover:bg-[#E5D3B3]/20 transition-colors" onClick={() => handleSort('category')}>
-                  <div className="flex items-center gap-2">Kategori <ArrowUpDown size={14} className="text-[#2B1B17]/40" /></div>
+                <th className="p-5 font-bold cursor-pointer hover:bg-[#E5E5E5]/20 transition-colors" onClick={() => handleSort('category')}>
+                  <div className="flex items-center gap-2">Kategori <ArrowUpDown size={14} className="text-[#404040]/40" /></div>
                 </th>
-                <th className="p-5 font-bold text-center cursor-pointer hover:bg-[#E5D3B3]/20 transition-colors" onClick={() => handleSort('is_new')}>
-                  <div className="flex items-center justify-center gap-2">New Release <ArrowUpDown size={14} className="text-[#2B1B17]/40" /></div>
+                <th className="p-5 font-bold text-center cursor-pointer hover:bg-[#E5E5E5]/20 transition-colors" onClick={() => handleSort('is_new')}>
+                  <div className="flex items-center justify-center gap-2">New Release <ArrowUpDown size={14} className="text-[#404040]/40" /></div>
                 </th>
-                <th className="p-5 font-bold text-center cursor-pointer hover:bg-[#E5D3B3]/20 transition-colors" onClick={() => handleSort('is_best_product')}>
-                  <div className="flex items-center justify-center gap-2">Best Choice <ArrowUpDown size={14} className="text-[#2B1B17]/40" /></div>
+                <th className="p-5 font-bold text-center cursor-pointer hover:bg-[#E5E5E5]/20 transition-colors" onClick={() => handleSort('is_best_product')}>
+                  <div className="flex items-center justify-center gap-2">Best Choice <ArrowUpDown size={14} className="text-[#404040]/40" /></div>
                 </th>
                 <th className="p-5 font-bold text-center">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E5D3B3]/20">
+            <tbody className="divide-y divide-[#E5E5E5]/20">
               {isLoading ? (
-                <tr><td colSpan={5} className="p-10 text-center text-[#2B1B17]/50 font-medium">Memuat katalog...</td></tr>
+                <tr><td colSpan={5} className="p-10 text-center text-[#404040]/50 font-medium">Memuat katalog...</td></tr>
               ) : processedProducts.length === 0 ? (
-                <tr><td colSpan={5} className="p-10 text-center text-[#2B1B17]/50 font-medium">Tidak ada produk ditemukan.</td></tr>
+                <tr><td colSpan={5} className="p-10 text-center text-[#404040]/50 font-medium">Tidak ada produk ditemukan.</td></tr>
               ) : (
                 processedProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-[#FDFBF7] transition-colors">
+                  <tr key={product.id} className="hover:bg-[#FAFAFA] transition-colors">
                     <td className="p-5">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-[#E5D3B3]/20 overflow-hidden relative shrink-0 border border-[#E5D3B3]/40">
+                        <div className="w-12 h-12 rounded-lg bg-[#E5E5E5]/20 overflow-hidden relative shrink-0 border border-[#E5E5E5]/40">
                           {product.image_url && <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />}
                         </div>
                         <div>
-                          <p className="font-bold text-[#2B1B17] mb-1">{product.name}</p>
-                          <p className="text-xs text-[#4A0E17] font-semibold">
+                          <p className="font-bold text-[#404040] mb-1">{product.name}</p>
+                          <p className="text-xs text-[#171717] font-semibold">
                             {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(product.price)}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="p-5 text-sm text-[#2B1B17]/80 font-medium">{product.category}</td>
+                    <td className="p-5 text-sm text-[#404040]/80 font-medium">{product.category}</td>
                     <td className="p-5 text-center">
-                      <button onClick={() => toggleStatus(product.id, 'is_new', product.is_new)} className={`inline-flex p-2 rounded-full transition-all ${product.is_new === 1 ? 'bg-[#00AA5B]/10 text-[#00AA5B] shadow-sm' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
+                      <button onClick={() => toggleStatus(product.id, 'is_new', product.is_new)} className={`inline-flex p-2 rounded-full transition-all ${product.is_new === 1 ? 'bg-[#525252]/10 text-[#525252] shadow-sm' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
                         {product.is_new === 1 ? <Check size={18} /> : <X size={18} />}
                       </button>
                     </td>
                     <td className="p-5 text-center">
-                      <button onClick={() => toggleStatus(product.id, 'is_best_product', product.is_best_product)} className={`inline-flex p-2 rounded-full transition-all ${product.is_best_product === 1 ? 'bg-[#4A0E17]/10 text-[#4A0E17] shadow-sm' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
+                      <button onClick={() => toggleStatus(product.id, 'is_best_product', product.is_best_product)} className={`inline-flex p-2 rounded-full transition-all ${product.is_best_product === 1 ? 'bg-[#171717]/10 text-[#171717] shadow-sm' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
                         {product.is_best_product === 1 ? <Check size={18} /> : <X size={18} />}
                       </button>
                     </td>
                     <td className="p-5 text-center">
                       <div className="flex items-center justify-center gap-2">
-                        <button onClick={() => openEditModal(product)} className="text-[#2B1B17]/40 hover:text-[#4A0E17] p-2 transition-colors rounded-lg hover:bg-[#4A0E17]/5">
+                        <button onClick={() => openEditModal(product)} className="text-[#404040]/40 hover:text-[#171717] p-2 transition-colors rounded-lg hover:bg-[#171717]/5">
                           <Edit2 size={18} />
                         </button>
-                        <button onClick={() => handleDelete(product.id)} className="text-[#2B1B17]/40 hover:text-red-600 p-2 transition-colors rounded-lg hover:bg-red-50">
+                          <button onClick={() => handleDelete(product.id)} className="text-neutral-400 hover:text-neutral-700 p-2 transition-colors rounded-lg hover:bg-neutral-100">
                           <Trash2 size={18} />
                         </button>
                       </div>
@@ -288,13 +285,13 @@ export default function CollectionPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B1B17]/60 backdrop-blur-sm px-4">
-          <div className="bg-[#FDFBF7] w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-6 border-b border-[#E5D3B3]/40 bg-white">
-              <h2 className={`${playfair.className} text-2xl font-bold text-[#4A0E17]`}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#404040]/60 backdrop-blur-sm px-4">
+          <div className="bg-[#FAFAFA] w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between p-6 border-b border-[#E5E5E5]/40 bg-white">
+              <h2 className="text-2xl font-bold text-neutral-950">
                 {editingId ? "Edit Produk" : "Tambah Produk Baru"}
               </h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-[#2B1B17]/60 hover:text-[#4A0E17] transition-colors p-2 bg-[#E5D3B3]/10 rounded-full">
+              <button onClick={() => setIsModalOpen(false)} className="text-[#404040]/60 hover:text-[#171717] transition-colors p-2 bg-[#E5E5E5]/10 rounded-full">
                 <CloseIcon size={20} />
               </button>
             </div>
@@ -303,30 +300,30 @@ export default function CollectionPage() {
               <form id="productForm" onSubmit={handleSaveProduct} className="space-y-5">
                 <div className="grid grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-[#2B1B17]/70 mb-2">Nama Produk</label>
-                    <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-3 border border-[#E5D3B3] rounded-xl outline-none focus:border-[#4A0E17] bg-white text-sm" />
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[#404040]/70 mb-2">Nama Produk</label>
+                    <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-3 border border-[#E5E5E5] rounded-xl outline-none focus:border-[#171717] bg-white text-sm" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-[#2B1B17]/70 mb-2">Harga (Rp)</label>
-                    <input type="number" required value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-3 border border-[#E5D3B3] rounded-xl outline-none focus:border-[#4A0E17] bg-white text-sm" />
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[#404040]/70 mb-2">Harga (Rp)</label>
+                    <input type="number" required value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-3 border border-[#E5E5E5] rounded-xl outline-none focus:border-[#171717] bg-white text-sm" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-[#2B1B17]/70 mb-2">Kategori</label>
-                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full p-3 border border-[#E5D3B3] rounded-xl outline-none focus:border-[#4A0E17] bg-white text-sm">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-[#404040]/70 mb-2">Kategori</label>
+                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full p-3 border border-[#E5E5E5] rounded-xl outline-none focus:border-[#171717] bg-white text-sm">
                     {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-[#2B1B17]/70 mb-2">Deskripsi</label>
-                  <textarea rows={3} required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full p-3 border border-[#E5D3B3] rounded-xl outline-none focus:border-[#4A0E17] bg-white text-sm resize-none" />
+                  <label className="block text-xs font-bold uppercase tracking-widest text-[#404040]/70 mb-2">Deskripsi</label>
+                  <textarea rows={3} required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full p-3 border border-[#E5E5E5] rounded-xl outline-none focus:border-[#171717] bg-white text-sm resize-none" />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-[#2B1B17]/70 mb-2">Gambar Produk</label>
-                  <div className="border-2 border-dashed border-[#E5D3B3] rounded-xl p-6 flex flex-col items-center justify-center bg-[#FDFBF7] hover:bg-[#F5F0E6] transition-colors cursor-pointer relative overflow-hidden h-40">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-[#404040]/70 mb-2">Gambar Produk</label>
+                  <div className="border-2 border-dashed border-[#E5E5E5] rounded-xl p-6 flex flex-col items-center justify-center bg-[#FAFAFA] hover:bg-[#F5F5F5] transition-colors cursor-pointer relative overflow-hidden h-40">
                     <input type="file" accept="image/*" onChange={e => setFile(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" />
                     
                     {file ? (
@@ -336,11 +333,11 @@ export default function CollectionPage() {
                     ) : null}
 
                     <div className="relative z-10 flex flex-col items-center">
-                      <UploadCloud size={32} className="text-[#4A0E17] mb-2 drop-shadow-md" />
-                      <p className="text-sm font-bold text-[#2B1B17] text-center drop-shadow-sm bg-white/60 px-3 py-1 rounded-full backdrop-blur-sm">
+                      <UploadCloud size={32} className="text-[#171717] mb-2 drop-shadow-md" />
+                      <p className="text-sm font-bold text-[#404040] text-center drop-shadow-sm bg-white/60 px-3 py-1 rounded-full backdrop-blur-sm">
                         {file ? file.name : editingId ? "Timpa dengan gambar baru" : "Klik atau seret gambar"}
                       </p>
-                      <p className="text-xs font-medium text-[#2B1B17]/70 mt-2 bg-white/60 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                      <p className="text-xs font-medium text-[#404040]/70 mt-2 bg-white/60 px-2 py-0.5 rounded-full backdrop-blur-sm">
                         Maks 2MB (JPG/PNG)
                       </p>
                     </div>
@@ -349,11 +346,11 @@ export default function CollectionPage() {
               </form>
             </div>
 
-            <div className="p-6 border-t border-[#E5D3B3]/40 bg-white flex justify-end gap-3">
-              <button onClick={() => setIsModalOpen(false)} type="button" className="px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest text-[#2B1B17] hover:bg-[#E5D3B3]/20 transition-colors">
+            <div className="p-6 border-t border-[#E5E5E5]/40 bg-white flex justify-end gap-3">
+              <button onClick={() => setIsModalOpen(false)} type="button" className="px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest text-[#404040] hover:bg-[#E5E5E5]/20 transition-colors">
                 Batal
               </button>
-              <button form="productForm" type="submit" disabled={isUploading} className="flex items-center gap-2 bg-[#4A0E17] text-[#FDFBF7] px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#2B1B17] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              <button form="productForm" type="submit" disabled={isUploading} className="flex items-center gap-2 bg-[#171717] text-[#FAFAFA] px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#404040] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 {isUploading ? "Memproses..." : "Simpan Produk"}
               </button>
             </div>

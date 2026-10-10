@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Playfair_Display } from "next/font/google";
 import { Check, X, Edit2, Plus, Trash2, X as CloseIcon } from "lucide-react";
-
-const playfair = Playfair_Display({ subsets: ["latin"] });
 
 export default function CareerPage() {
   const [careers, setCareers] = useState<any[]>([]);
@@ -111,49 +108,49 @@ export default function CareerPage() {
     <div className="p-8 max-w-7xl mx-auto relative">
       <div className="flex justify-between items-center mb-10">
         <div>
-          <h1 className={`${playfair.className} text-3xl font-bold text-[#4A0E17] mb-2`}>Career Management</h1>
-          <p className="text-[#2B1B17]/60">Kelola informasi lowongan kerja aktif.</p>
+          <h1 className="text-3xl font-bold text-neutral-950 mb-2">Career Management</h1>
+          <p className="text-neutral-500">Kelola informasi lowongan kerja aktif.</p>
         </div>
-        <button onClick={openAddModal} className="flex items-center gap-2 bg-[#4A0E17] text-[#FDFBF7] px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#2B1B17] transition-colors shadow-md">
+        <button onClick={openAddModal} className="flex items-center gap-2 bg-neutral-950 text-white px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-neutral-700 transition-colors shadow-md">
           <Plus size={18} /> Tambah Lowongan
         </button>
       </div>
 
-      <div className="bg-white border border-[#E5D3B3]/40 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-[#E5E5E5]/40 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto min-h-[300px]">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-[#F5F0E6] text-[#2B1B17] text-xs uppercase tracking-widest border-b border-[#E5D3B3]/40">
+              <tr className="bg-neutral-100 text-neutral-700 text-xs uppercase tracking-widest border-b border-neutral-200">
                 <th className="p-5 font-bold">Posisi & Tipe</th>
                 <th className="p-5 font-bold">Penempatan</th>
                 <th className="p-5 font-bold text-center">Status Aktif</th>
                 <th className="p-5 font-bold text-center">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E5D3B3]/20">
+            <tbody className="divide-y divide-neutral-200">
               {isLoading ? (
-                <tr><td colSpan={4} className="p-10 text-center text-[#2B1B17]/50 font-medium">Memuat data...</td></tr>
+                <tr><td colSpan={4} className="p-10 text-center text-[#404040]/50 font-medium">Memuat data...</td></tr>
               ) : careers.length === 0 ? (
-                <tr><td colSpan={4} className="p-10 text-center text-[#2B1B17]/50 font-medium">Belum ada lowongan.</td></tr>
+                <tr><td colSpan={4} className="p-10 text-center text-[#404040]/50 font-medium">Belum ada lowongan.</td></tr>
               ) : (
                 careers.map((c) => (
-                  <tr key={c.id} className="hover:bg-[#FDFBF7] transition-colors">
+                  <tr key={c.id} className="hover:bg-neutral-50 transition-colors">
                     <td className="p-5">
-                      <p className="font-bold text-[#2B1B17] mb-1">{c.title}</p>
-                      <p className="text-xs font-bold uppercase tracking-widest text-[#4A0E17]">{c.type}</p>
+                      <p className="font-bold text-neutral-800 mb-1">{c.title}</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-neutral-700">{c.type}</p>
                     </td>
-                    <td className="p-5 text-sm text-[#2B1B17]/80">{c.placement}</td>
+                      <td className="p-5 text-sm text-neutral-700">{c.placement}</td>
                     <td className="p-5 text-center">
-                      <button onClick={() => toggleStatus(c.id, c.is_active)} className={`inline-flex p-2 rounded-full transition-all ${c.is_active === 1 ? 'bg-[#00AA5B]/10 text-[#00AA5B] shadow-sm' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
+                      <button onClick={() => toggleStatus(c.id, c.is_active)} className={`inline-flex p-2 rounded-full transition-all ${c.is_active === 1 ? 'bg-[#525252]/10 text-[#525252] shadow-sm' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
                         {c.is_active === 1 ? <Check size={18} /> : <X size={18} />}
                       </button>
                     </td>
                     <td className="p-5 text-center">
                       <div className="flex items-center justify-center gap-2">
-                        <button onClick={() => openEditModal(c)} className="text-[#2B1B17]/40 hover:text-[#4A0E17] p-2 transition-colors rounded-lg hover:bg-[#4A0E17]/5">
+                        <button onClick={() => openEditModal(c)} className="text-[#404040]/40 hover:text-[#171717] p-2 transition-colors rounded-lg hover:bg-[#171717]/5">
                           <Edit2 size={18} />
                         </button>
-                        <button onClick={() => handleDelete(c.id)} className="text-[#2B1B17]/40 hover:text-red-600 p-2 transition-colors rounded-lg hover:bg-red-50">
+                        <button onClick={() => handleDelete(c.id)} className="text-neutral-400 hover:text-neutral-700 p-2 transition-colors rounded-lg hover:bg-neutral-100">
                           <Trash2 size={18} />
                         </button>
                       </div>
@@ -167,13 +164,13 @@ export default function CareerPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B1B17]/60 backdrop-blur-sm px-4 py-8">
-          <div className="bg-[#FDFBF7] w-full max-w-2xl rounded-3xl shadow-2xl flex flex-col max-h-full">
-            <div className="flex items-center justify-between p-6 border-b border-[#E5D3B3]/40 bg-white shrink-0">
-              <h2 className={`${playfair.className} text-2xl font-bold text-[#4A0E17]`}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#404040]/60 backdrop-blur-sm px-4 py-8">
+          <div className="bg-[#FAFAFA] w-full max-w-2xl rounded-3xl shadow-2xl flex flex-col max-h-full">
+            <div className="flex items-center justify-between p-6 border-b border-[#E5E5E5]/40 bg-white shrink-0">
+              <h2 className="text-2xl font-bold text-neutral-950">
                 {editingId ? "Edit Lowongan" : "Tambah Lowongan Baru"}
               </h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-[#2B1B17]/60 hover:text-[#4A0E17] transition-colors p-2 bg-[#E5D3B3]/10 rounded-full">
+              <button onClick={() => setIsModalOpen(false)} className="text-[#404040]/60 hover:text-[#171717] transition-colors p-2 bg-[#E5E5E5]/10 rounded-full">
                 <CloseIcon size={20} />
               </button>
             </div>
@@ -182,12 +179,12 @@ export default function CareerPage() {
               <form id="careerForm" onSubmit={handleSave} className="space-y-5">
                 <div className="grid grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-[#2B1B17]/70 mb-2">Posisi Pekerjaan</label>
-                    <input type="text" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-3 border border-[#E5D3B3] rounded-xl outline-none focus:border-[#4A0E17] bg-white text-sm" placeholder="Contoh: Store Manager" />
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[#404040]/70 mb-2">Posisi Pekerjaan</label>
+                    <input type="text" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-3 border border-[#E5E5E5] rounded-xl outline-none focus:border-[#171717] bg-white text-sm" placeholder="Contoh: Store Manager" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-[#2B1B17]/70 mb-2">Tipe Pekerjaan</label>
-                    <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full p-3 border border-[#E5D3B3] rounded-xl outline-none focus:border-[#4A0E17] bg-white text-sm">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[#404040]/70 mb-2">Tipe Pekerjaan</label>
+                    <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full p-3 border border-[#E5E5E5] rounded-xl outline-none focus:border-[#171717] bg-white text-sm">
                       <option value="Full-Time">Full-Time</option>
                       <option value="Part-Time">Part-Time</option>
                       <option value="Internship">Internship</option>
@@ -196,27 +193,27 @@ export default function CareerPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-[#2B1B17]/70 mb-2">Penempatan</label>
-                  <input type="text" required value={formData.placement} onChange={e => setFormData({...formData, placement: e.target.value})} className="w-full p-3 border border-[#E5D3B3] rounded-xl outline-none focus:border-[#4A0E17] bg-white text-sm" placeholder="Contoh: Arasa Pusat, Mojokerto" />
+                  <label className="block text-xs font-bold uppercase tracking-widest text-[#404040]/70 mb-2">Penempatan</label>
+                  <input type="text" required value={formData.placement} onChange={e => setFormData({...formData, placement: e.target.value})} className="w-full p-3 border border-[#E5E5E5] rounded-xl outline-none focus:border-[#171717] bg-white text-sm" placeholder="Contoh: Arasa Pusat, Mojokerto" />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-[#2B1B17]/70 mb-2">Kualifikasi (Pisahkan dengan Enter)</label>
-                  <textarea rows={4} required value={formData.qualifications} onChange={e => setFormData({...formData, qualifications: e.target.value})} className="w-full p-3 border border-[#E5D3B3] rounded-xl outline-none focus:border-[#4A0E17] bg-white text-sm resize-none leading-relaxed" placeholder="Minimal SMA/SMK sederajat&#10;Pengalaman 1 tahun&#10;Komunikatif" />
+                  <label className="block text-xs font-bold uppercase tracking-widest text-[#404040]/70 mb-2">Kualifikasi (Pisahkan dengan Enter)</label>
+                  <textarea rows={4} required value={formData.qualifications} onChange={e => setFormData({...formData, qualifications: e.target.value})} className="w-full p-3 border border-[#E5E5E5] rounded-xl outline-none focus:border-[#171717] bg-white text-sm resize-none leading-relaxed" placeholder="Minimal SMA/SMK sederajat&#10;Pengalaman 1 tahun&#10;Komunikatif" />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-[#2B1B17]/70 mb-2">Benefit (Pisahkan dengan Enter)</label>
-                  <textarea rows={4} required value={formData.benefits} onChange={e => setFormData({...formData, benefits: e.target.value})} className="w-full p-3 border border-[#E5D3B3] rounded-xl outline-none focus:border-[#4A0E17] bg-white text-sm resize-none leading-relaxed" placeholder="Gaji Pokok&#10;Tunjangan Transport&#10;BPJS" />
+                  <label className="block text-xs font-bold uppercase tracking-widest text-[#404040]/70 mb-2">Benefit (Pisahkan dengan Enter)</label>
+                  <textarea rows={4} required value={formData.benefits} onChange={e => setFormData({...formData, benefits: e.target.value})} className="w-full p-3 border border-[#E5E5E5] rounded-xl outline-none focus:border-[#171717] bg-white text-sm resize-none leading-relaxed" placeholder="Gaji Pokok&#10;Tunjangan Transport&#10;BPJS" />
                 </div>
               </form>
             </div>
 
-            <div className="p-6 border-t border-[#E5D3B3]/40 bg-white flex justify-end gap-3 shrink-0">
-              <button onClick={() => setIsModalOpen(false)} type="button" className="px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest text-[#2B1B17] hover:bg-[#E5D3B3]/20 transition-colors">
+            <div className="p-6 border-t border-[#E5E5E5]/40 bg-white flex justify-end gap-3 shrink-0">
+              <button onClick={() => setIsModalOpen(false)} type="button" className="px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest text-[#404040] hover:bg-[#E5E5E5]/20 transition-colors">
                 Batal
               </button>
-              <button form="careerForm" type="submit" disabled={isSaving} className="flex items-center gap-2 bg-[#4A0E17] text-[#FDFBF7] px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#2B1B17] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              <button form="careerForm" type="submit" disabled={isSaving} className="flex items-center gap-2 bg-[#171717] text-[#FAFAFA] px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#404040] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 {isSaving ? "Menyimpan..." : "Simpan Lowongan"}
               </button>
             </div>

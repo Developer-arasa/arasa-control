@@ -4,11 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { Playfair_Display } from "next/font/google";
 import * as XLSX from "xlsx";
 import { ArrowLeft, Download, Users, Package, Wallet, ChefHat } from "lucide-react";
 
-const playfair = Playfair_Display({ subsets: ["latin"] });
 
 export default function OrderDetailPage() {
   const params = useParams();
@@ -152,24 +150,24 @@ export default function OrderDetailPage() {
   };
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center"><p className="text-[#2B1B17]/50 font-bold tracking-widest uppercase text-sm">Menyiapkan Dashboard...</p></div>;
+    return <div className="min-h-screen flex items-center justify-center"><p className="text-[#404040]/50 font-bold tracking-widest uppercase text-sm">Menyiapkan Dashboard...</p></div>;
   }
 
   if (!sessionData) {
-    return <div className="min-h-screen flex items-center justify-center"><p className="text-red-500 font-bold">Sesi tidak ditemukan.</p></div>;
+    return <div className="min-h-screen flex items-center justify-center"><p className="text-neutral-700 font-bold">Sesi tidak ditemukan.</p></div>;
   }
 
   return (
     <div className="p-4 sm:p-8 max-w-7xl mx-auto min-h-screen pb-24">
       <div className="mb-6 flex flex-col sm:flex-row justify-between sm:items-end gap-4 mt-4 sm:mt-0">
         <div>
-          <Link href="/order" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#2B1B17]/50 hover:text-[#4A0E17] transition-colors mb-4">
+          <Link href="/order" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#404040]/50 hover:text-[#171717] transition-colors mb-4">
             <ArrowLeft size={16} /> Kembali ke Board
           </Link>
-          <h1 className={`${playfair.className} text-2xl sm:text-4xl font-bold text-[#4A0E17] mb-2`}>{sessionData.group_name}</h1>
-          <p className="text-sm text-[#2B1B17]/60 flex items-center gap-2">
-            TL: <strong className="text-[#2B1B17]">{sessionData.tour_leaders?.name}</strong> • 
-            <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest ${sessionData.status === 'active' ? 'bg-[#00AA5B]/10 text-[#00AA5B]' : 'bg-gray-100 text-gray-500'}`}>
+          <h1 className="text-2xl sm:text-4xl font-bold text-neutral-950 mb-2">{sessionData.group_name}</h1>
+          <p className="text-sm text-[#404040]/60 flex items-center gap-2">
+            TL: <strong className="text-[#404040]">{sessionData.tour_leaders?.name}</strong> •
+            <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest ${sessionData.status === 'active' ? 'bg-[#525252]/10 text-[#525252]' : 'bg-gray-100 text-gray-500'}`}>
               {sessionData.status}
             </span>
           </p>
@@ -177,52 +175,52 @@ export default function OrderDetailPage() {
 
         <button 
           onClick={handleExportExcel}
-          className="flex items-center justify-center gap-2 bg-[#00AA5B] hover:bg-[#008a4a] text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all shadow-md shrink-0"
+          className="flex items-center justify-center gap-2 bg-[#525252] hover:bg-[#008a4a] text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all shadow-md shrink-0"
         >
           <Download size={16} /> Export Data (Excel)
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
-        <div className="bg-white border border-[#E5D3B3]/40 p-5 sm:p-6 rounded-2xl shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#4A0E17]/10 text-[#4A0E17]"><Wallet size={24} /></div>
+        <div className="bg-white border border-[#E5E5E5]/40 p-5 sm:p-6 rounded-2xl shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#171717]/10 text-[#171717]"><Wallet size={24} /></div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-[#2B1B17]/50 mb-1">Total Omzet</p>
-            <h3 className="text-xl font-bold text-[#2B1B17]">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(sessionData.totalOmzet)}</h3>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#404040]/50 mb-1">Total Omzet</p>
+            <h3 className="text-xl font-bold text-[#404040]">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(sessionData.totalOmzet)}</h3>
           </div>
         </div>
-        <div className="bg-white border border-[#E5D3B3]/40 p-5 sm:p-6 rounded-2xl shadow-sm flex items-center gap-4">
+        <div className="bg-white border border-[#E5E5E5]/40 p-5 sm:p-6 rounded-2xl shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-100 text-blue-600"><Users size={24} /></div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-[#2B1B17]/50 mb-1">Total Penumpang</p>
-            <h3 className="text-xl font-bold text-[#2B1B17]">{sessionData.tour_orders.length} Orang</h3>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#404040]/50 mb-1">Total Penumpang</p>
+            <h3 className="text-xl font-bold text-[#404040]">{sessionData.tour_orders.length} Orang</h3>
           </div>
         </div>
-        <div className="bg-white border border-[#E5D3B3]/40 p-5 sm:p-6 rounded-2xl shadow-sm flex items-center gap-4">
+        <div className="bg-white border border-[#E5E5E5]/40 p-5 sm:p-6 rounded-2xl shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-orange-100 text-orange-600"><Package size={24} /></div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-[#2B1B17]/50 mb-1">Barang Disiapkan</p>
-            <h3 className="text-xl font-bold text-[#2B1B17]">{sessionData.totalItems} Pcs</h3>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#404040]/50 mb-1">Barang Disiapkan</p>
+            <h3 className="text-xl font-bold text-[#404040]">{sessionData.totalItems} Pcs</h3>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="lg:col-span-1">
-          <div className="bg-white border border-[#E5D3B3]/60 rounded-2xl p-5 sm:p-6 shadow-sm sticky top-6">
-            <div className="flex items-center gap-2 mb-4 border-b border-[#E5D3B3]/40 pb-4">
-              <ChefHat size={20} className="text-[#4A0E17]" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-[#2B1B17]">Rekap Dapur</h2>
+          <div className="bg-white border border-[#E5E5E5]/60 rounded-2xl p-5 sm:p-6 shadow-sm sticky top-6">
+            <div className="flex items-center gap-2 mb-4 border-b border-[#E5E5E5]/40 pb-4">
+              <ChefHat size={20} className="text-[#171717]" />
+              <h2 className="text-sm font-bold uppercase tracking-widest text-[#404040]">Rekap Dapur</h2>
             </div>
             
             {sessionData.aggregatedItems.length === 0 ? (
-              <p className="text-center text-sm text-[#2B1B17]/40 italic py-10">Belum ada pesanan masuk.</p>
+              <p className="text-center text-sm text-[#404040]/40 italic py-10">Belum ada pesanan masuk.</p>
             ) : (
               <ul className="space-y-3">
                 {sessionData.aggregatedItems.map((item: any, idx: number) => (
                   <li key={idx} className="flex justify-between items-center text-sm">
-                    <span className="font-semibold text-[#2B1B17]">{item.name}</span>
-                    <span className="font-bold text-[#FDFBF7] bg-[#4A0E17] px-3 py-1 rounded-md text-xs">{item.qty} Pcs</span>
+                    <span className="font-semibold text-[#404040]">{item.name}</span>
+                    <span className="font-bold text-[#FAFAFA] bg-[#171717] px-3 py-1 rounded-md text-xs">{item.qty} Pcs</span>
                   </li>
                 ))}
               </ul>
@@ -231,36 +229,36 @@ export default function OrderDetailPage() {
         </div>
 
         <div className="lg:col-span-2">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-[#2B1B17] mb-4">Detail Per Penumpang</h2>
+          <h2 className="text-sm font-bold uppercase tracking-widest text-[#404040] mb-4">Detail Per Penumpang</h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {sessionData.tour_orders.map((order: any) => (
-              <div key={order.id} className="bg-white border border-[#E5D3B3]/60 rounded-xl p-5 shadow-sm flex flex-col">
-                <div className="flex justify-between items-start mb-3 border-b border-[#E5D3B3]/20 pb-3">
-                  <h5 className="font-bold text-sm text-[#4A0E17] pr-2">{order.passenger_name}</h5>
-                  <span className="text-[10px] font-bold bg-[#E5D3B3]/20 text-[#2B1B17] px-2 py-0.5 rounded shrink-0">
+              <div key={order.id} className="bg-white border border-[#E5E5E5]/60 rounded-xl p-5 shadow-sm flex flex-col">
+                <div className="flex justify-between items-start mb-3 border-b border-[#E5E5E5]/20 pb-3">
+                  <h5 className="font-bold text-sm text-[#171717] pr-2">{order.passenger_name}</h5>
+                  <span className="text-[10px] font-bold bg-[#E5E5E5]/20 text-[#404040] px-2 py-0.5 rounded shrink-0">
                     Kursi {order.seat_number || "-"}
                   </span>
                 </div>
                 
                 <div className="flex-1 min-h-[80px]">
                   {order.cleanItems.length === 0 ? (
-                    <p className="text-xs text-[#2B1B17]/40 italic mt-2">Tidak ada pesanan aktif.</p>
+                    <p className="text-xs text-[#404040]/40 italic mt-2">Tidak ada pesanan aktif.</p>
                   ) : (
                     <ul className="space-y-2">
                       {order.cleanItems.map((item: any, i: number) => (
-                        <li key={i} className="flex justify-between items-start text-xs border-b border-dashed border-[#E5D3B3]/30 pb-1.5 last:border-0">
-                          <span className="text-[#2B1B17]/80 line-clamp-1 pr-2">{item.name}</span>
-                          <span className="font-bold text-[#2B1B17]">x{item.qty}</span>
+                        <li key={i} className="flex justify-between items-start text-xs border-b border-dashed border-[#E5E5E5]/30 pb-1.5 last:border-0">
+                          <span className="text-[#404040]/80 line-clamp-1 pr-2">{item.name}</span>
+                          <span className="font-bold text-[#404040]">x{item.qty}</span>
                         </li>
                       ))}
                     </ul>
                   )}
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-[#E5D3B3]/40 flex justify-between items-center bg-[#FDFBF7] -mx-5 -mb-5 p-4 rounded-b-xl">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#2B1B17]/50">Total Tagihan</span>
-                  <span className="text-sm font-bold text-[#4A0E17]">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(order.orderTotal)}</span>
+                <div className="mt-4 pt-3 border-t border-[#E5E5E5]/40 flex justify-between items-center bg-[#FAFAFA] -mx-5 -mb-5 p-4 rounded-b-xl">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#404040]/50">Total Tagihan</span>
+                  <span className="text-sm font-bold text-[#171717]">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(order.orderTotal)}</span>
                 </div>
               </div>
             ))}

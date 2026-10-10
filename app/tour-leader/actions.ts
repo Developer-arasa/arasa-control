@@ -29,7 +29,7 @@ export async function registerTourLeader(formData: FormData) {
 
     if (error) throw error;
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Gagal mendaftar TL:", error);
     return { success: false, error: "Terjadi kesalahan sistem saat menyimpan data." };
   }
@@ -44,7 +44,7 @@ export async function editTourLeader(id: string, formData: FormData) {
 
     if (!name) return { success: false, error: "Nama wajib diisi." };
 
-    let updatePayload: any = { name, phone, agency_name: agencyName };
+    const updatePayload: { name: string; phone: string; agency_name: string; pin_hash?: string } = { name, phone, agency_name: agencyName };
 
     if (pin && pin.length === 6) {
       const salt = await bcrypt.genSalt(10);
