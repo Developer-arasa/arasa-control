@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Check, X, Edit2, Plus, Trash2, X as CloseIcon, UploadCloud, Search, ArrowUpDown } from "lucide-react";
+import { Check, X, Edit2, Plus, Trash2, X as CloseIcon, UploadCloud, Search, ArrowUpDown, Eye, EyeOff } from "lucide-react";
 
 const CATEGORIES = ["Onde-Onde", "Pastry & Cookies", "Cakes & Lapis", "Savory Snack"];
 
@@ -51,6 +51,21 @@ export default function CollectionPage() {
     setProducts(products.map(p => p.id === id ? { ...p, [field]: newValue } : p));
     const { error } = await supabase.from('products').update({ [field]: newValue }).eq('id', id);
     if (error) fetchProducts();
+  };
+
+  const toggleHide = async (id: string, currentValue: boolean | null) => {
+    const newValue = currentValue !== true;
+    setProducts(products.map(product => product.id === id ? { ...product, hide: newValue } : product));
+
+    const { error } = await supabase
+      .from('products')
+      .update({ hide: newValue })
+      .eq('id', id);
+
+    if (error) {
+      alert("Gagal mengubah status tampilan produk");
+      fetchProducts();
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -153,7 +168,7 @@ export default function CollectionPage() {
       } else {
         const { error: insertError } = await supabase
           .from('products')
-          .insert([{ ...productPayload, is_new: 1, is_best_product: 0 }]);
+          .insert([{ ...productPayload, is_new: 1, is_best_product: 0, hide: false }]);
         if (insertError) throw insertError;
       }
 
@@ -231,17 +246,18 @@ export default function CollectionPage() {
                 <th className="p-5 font-bold text-center cursor-pointer hover:bg-[#E5E5E5]/20 transition-colors" onClick={() => handleSort('is_best_product')}>
                   <div className="flex items-center justify-center gap-2">Best Choice <ArrowUpDown size={14} className="text-[#404040]/40" /></div>
                 </th>
+                <th className="p-5 font-bold text-center">Tampilan</th>
                 <th className="p-5 font-bold text-center">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E5E5E5]/20">
               {isLoading ? (
-                <tr><td colSpan={5} className="p-10 text-center text-[#404040]/50 font-medium">Memuat katalog...</td></tr>
+                <tr><td colSpan={6} className="p-10 text-center text-[#404040]/50 font-medium">Memuat katalog...</td></tr>
               ) : processedProducts.length === 0 ? (
-                <tr><td colSpan={5} className="p-10 text-center text-[#404040]/50 font-medium">Tidak ada produk ditemukan.</td></tr>
+                <tr><td colSpan={6} className="p-10 text-center text-[#404040]/50 font-medium">Tidak ada produk ditemukan.</td></tr>
               ) : (
                 processedProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-[#FAFAFA] transition-colors">
+                  <tr key={product.id} className={`hover:bg-[#FAFAFA] transition-colors ${product.hide === true ? 'opacity-60' : ''}`}>
                     <td className="p-5">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-lg bg-[#E5E5E5]/20 overflow-hidden relative shrink-0 border border-[#E5E5E5]/40">
@@ -264,6 +280,17 @@ export default function CollectionPage() {
                     <td className="p-5 text-center">
                       <button onClick={() => toggleStatus(product.id, 'is_best_product', product.is_best_product)} className={`inline-flex p-2 rounded-full transition-all ${product.is_best_product === 1 ? 'bg-[#171717]/10 text-[#171717] shadow-sm' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
                         {product.is_best_product === 1 ? <Check size={18} /> : <X size={18} />}
+                      </button>
+                    </td>
+                    <td className="p-5 text-center">
+                      <button
+                        onClick={() => toggleHide(product.id, product.hide)}
+                        title={product.hide === true ? "Tampilkan produk" : "Sembunyikan produk"}
+                        aria-label={product.hide === true ? `Tampilkan ${product.name}` : `Sembunyikan ${product.name}`}
+                        className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold transition-all ${product.hide === true ? 'bg-gray-100 text-gray-500 hover:bg-gray-200' : 'bg-[#171717]/10 text-[#171717] shadow-sm hover:bg-[#171717]/20'}`}
+                      >
+                        {product.hide === true ? <EyeOff size={16} /> : <Eye size={16} />}
+                        {product.hide === true ? "Disembunyikan" : "Tampil"}
                       </button>
                     </td>
                     <td className="p-5 text-center">
