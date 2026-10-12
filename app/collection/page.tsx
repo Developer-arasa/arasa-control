@@ -63,7 +63,23 @@ export default function CollectionPage() {
       .eq('id', id);
 
     if (error) {
-      alert("Gagal mengubah status tampilan produk");
+      alert("Gagal mengubah status tampilan produk retail");
+      fetchProducts();
+    }
+  };
+
+  // refactored logic: toggle khusus visibilitas katalog tour
+  const toggleTourHide = async (id: string, currentValue: boolean | null) => {
+    const newValue = currentValue !== true;
+    setProducts(products.map(product => product.id === id ? { ...product, tour_hide: newValue } : product));
+
+    const { error } = await supabase
+      .from('products')
+      .update({ tour_hide: newValue })
+      .eq('id', id);
+
+    if (error) {
+      alert("Gagal mengubah status tampilan produk tour");
       fetchProducts();
     }
   };
@@ -168,7 +184,7 @@ export default function CollectionPage() {
       } else {
         const { error: insertError } = await supabase
           .from('products')
-          .insert([{ ...productPayload, is_new: 1, is_best_product: 0, hide: false }]);
+          .insert([{ ...productPayload, is_new: 1, is_best_product: 0, hide: false, tour_hide: false }]);
         if (insertError) throw insertError;
       }
 
@@ -246,18 +262,19 @@ export default function CollectionPage() {
                 <th className="p-5 font-bold text-center cursor-pointer hover:bg-[#E5E5E5]/20 transition-colors" onClick={() => handleSort('is_best_product')}>
                   <div className="flex items-center justify-center gap-2">Best Choice <ArrowUpDown size={14} className="text-[#404040]/40" /></div>
                 </th>
-                <th className="p-5 font-bold text-center">Tampilan</th>
+                <th className="p-5 font-bold text-center">Tampilan Retail</th>
+                <th className="p-5 font-bold text-center">Tampilan Tour</th>
                 <th className="p-5 font-bold text-center">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E5E5E5]/20">
               {isLoading ? (
-                <tr><td colSpan={6} className="p-10 text-center text-[#404040]/50 font-medium">Memuat katalog...</td></tr>
+                <tr><td colSpan={7} className="p-10 text-center text-[#404040]/50 font-medium">Memuat katalog...</td></tr>
               ) : processedProducts.length === 0 ? (
-                <tr><td colSpan={6} className="p-10 text-center text-[#404040]/50 font-medium">Tidak ada produk ditemukan.</td></tr>
+                <tr><td colSpan={7} className="p-10 text-center text-[#404040]/50 font-medium">Tidak ada produk ditemukan.</td></tr>
               ) : (
                 processedProducts.map((product) => (
-                  <tr key={product.id} className={`hover:bg-[#FAFAFA] transition-colors ${product.hide === true ? 'opacity-60' : ''}`}>
+                  <tr key={product.id} className={`hover:bg-[#FAFAFA] transition-colors ${product.hide === true && product.tour_hide === true ? 'opacity-50' : ''}`}>
                     <td className="p-5">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-lg bg-[#E5E5E5]/20 overflow-hidden relative shrink-0 border border-[#E5E5E5]/40">
@@ -285,8 +302,7 @@ export default function CollectionPage() {
                     <td className="p-5 text-center">
                       <button
                         onClick={() => toggleHide(product.id, product.hide)}
-                        title={product.hide === true ? "Tampilkan produk" : "Sembunyikan produk"}
-                        aria-label={product.hide === true ? `Tampilkan ${product.name}` : `Sembunyikan ${product.name}`}
+                        title={product.hide === true ? "Tampilkan di Retail" : "Sembunyikan di Retail"}
                         className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold transition-all ${product.hide === true ? 'bg-gray-100 text-gray-500 hover:bg-gray-200' : 'bg-[#171717]/10 text-[#171717] shadow-sm hover:bg-[#171717]/20'}`}
                       >
                         {product.hide === true ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -294,11 +310,21 @@ export default function CollectionPage() {
                       </button>
                     </td>
                     <td className="p-5 text-center">
+                      <button
+                        onClick={() => toggleTourHide(product.id, product.tour_hide)}
+                        title={product.tour_hide === true ? "Tampilkan di Tour" : "Sembunyikan di Tour"}
+                        className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold transition-all ${product.tour_hide === true ? 'bg-gray-100 text-gray-500 hover:bg-gray-200' : 'bg-[#4A0E17]/10 text-[#4A0E17] shadow-sm hover:bg-[#4A0E17]/20'}`}
+                      >
+                        {product.tour_hide === true ? <EyeOff size={16} /> : <Eye size={16} />}
+                        {product.tour_hide === true ? "Disembunyikan" : "Tampil"}
+                      </button>
+                    </td>
+                    <td className="p-5 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button onClick={() => openEditModal(product)} className="text-[#404040]/40 hover:text-[#171717] p-2 transition-colors rounded-lg hover:bg-[#171717]/5">
                           <Edit2 size={18} />
                         </button>
-                          <button onClick={() => handleDelete(product.id)} className="text-neutral-400 hover:text-neutral-700 p-2 transition-colors rounded-lg hover:bg-neutral-100">
+                        <button onClick={() => handleDelete(product.id)} className="text-neutral-400 hover:text-neutral-700 p-2 transition-colors rounded-lg hover:bg-neutral-100">
                           <Trash2 size={18} />
                         </button>
                       </div>
