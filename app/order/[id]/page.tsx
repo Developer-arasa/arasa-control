@@ -327,7 +327,7 @@ export default function OrderDetailPage() {
               activeTab === "dapur" ? "bg-[#171717] text-white shadow-sm" : "bg-white text-[#404040]/60 border border-[#E5E5E5] hover:text-[#171717]"
             }`}
           >
-            <ChefHat size={15} /> 1. Rekap Dapur
+            <ChefHat size={15} /> REKAP DAPUR
           </button>
           <button
             onClick={() => setActiveTab("matriks")}
@@ -335,7 +335,7 @@ export default function OrderDetailPage() {
               activeTab === "matriks" ? "bg-[#171717] text-white shadow-sm" : "bg-white text-[#404040]/60 border border-[#E5E5E5] hover:text-[#171717]"
             }`}
           >
-            <Table size={15} /> 2. Rekap Pesanan
+            <Table size={15} /> REKAP PESANAN
           </button>
           <button
             onClick={() => setActiveTab("detail")}
@@ -343,7 +343,7 @@ export default function OrderDetailPage() {
               activeTab === "detail" ? "bg-[#171717] text-white shadow-sm" : "bg-white text-[#404040]/60 border border-[#E5E5E5] hover:text-[#171717]"
             }`}
           >
-            <UserCheck size={15} /> 3. Detail Per Orang
+            <UserCheck size={15} /> KUPON PACKING
           </button>
         </div>
 
@@ -370,50 +370,159 @@ export default function OrderDetailPage() {
           </div>
         )}
 
-        {/* Konten Sub-Tab 2: Rekap Pesanan */}
+        
+                {/* Konten Sub-Tab 2: Rekap Pesanan */}
         {activeTab === "matriks" && (
-          <div className="bg-white border border-[#E5E5E5]/60 rounded-2xl shadow-sm overflow-hidden">
+          <div className="rounded-2xl border border-neutral-200/80 bg-white shadow-sm overflow-hidden dark:border-neutral-800 dark:bg-neutral-950">
             {sessionData.tour_orders.length === 0 ? (
-              <p className="text-center text-sm text-[#404040]/40 italic py-12">Belum ada pesanan masuk.</p>
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100 text-neutral-400 dark:bg-neutral-900">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <p className="mt-2.5 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                  Belum ada pesanan masuk
+                </p>
+              </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-[#FFFF00] text-black font-bold border-b border-black">
-                      <th className="p-3 border border-black text-center w-12">No</th>
-                      <th className="p-3 border border-black min-w-[150px]">Nama</th>
-                      {sessionData.productColumns.map((colName: string) => (
-                        <th key={colName} className="p-3 border border-black text-center min-w-[90px]">
-                          {colName}
+              <div>
+                {/* Header Ringkas */}
+                <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3 bg-neutral-50/50 dark:border-neutral-800/80 dark:bg-neutral-900/40">
+                  <div>
+                    <h3 className="text-xs font-semibold text-neutral-900 dark:text-neutral-100 uppercase tracking-wide">
+                      Matriks Pesanan
+                    </h3>
+                    <p className="text-[11px] text-neutral-500">
+                      Rincian kuantitas menu per penumpang
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    {sessionData.tour_orders.length} Penumpang
+                  </span>
+                </div>
+
+                {/* Tabel Fit Lebar Layar */}
+                <div className="w-full">
+                  <table className="w-full table-fixed text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-neutral-200 bg-neutral-50/90 dark:border-neutral-800 dark:bg-neutral-900/60">
+                        <th scope="col" className="w-8 px-1.5 py-2.5 text-center font-semibold text-neutral-400">
+                          #
                         </th>
+                        <th scope="col" className="w-[30%] sm:w-[25%] px-2.5 py-2.5 font-semibold text-neutral-700 dark:text-neutral-300">
+                          Nama
+                        </th>
+                        {sessionData.productColumns.map((colName: string) => (
+                          <th
+                            key={colName}
+                            scope="col"
+                            className="px-1 py-2.5 text-center font-medium text-neutral-700 dark:text-neutral-300"
+                          >
+                            <span className="block text-[11px] leading-tight break-words font-semibold">
+                              {colName}
+                            </span>
+                          </th>
+                        ))}
+                        <th
+                          scope="col"
+                          className="w-[20%] sm:w-[18%] px-2.5 py-2.5 text-right font-semibold text-neutral-900 dark:text-neutral-100"
+                        >
+                          Total
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
+                      {sessionData.tour_orders.map((order: any, idx: number) => (
+                        <tr
+                          key={order.id}
+                          className="transition-colors hover:bg-neutral-50/70 dark:hover:bg-neutral-900/30"
+                        >
+                          <td className="px-1.5 py-2 text-center font-mono text-[11px] text-neutral-400 align-top">
+                            {idx + 1}
+                          </td>
+                          {/* Nama Penumpang: otomatis wrap ke bawah jika panjang */}
+                          <td className="px-2.5 py-2 align-top">
+                            <span className="block break-words font-medium text-neutral-900 leading-snug dark:text-neutral-100">
+                              {order.passenger_name}
+                            </span>
+                          </td>
+                          {sessionData.productColumns.map((colName: string) => {
+                            const qty = order.itemMap?.[colName];
+                            return (
+                              <td
+                                key={colName}
+                                className="px-1 py-2 text-center align-top tabular-nums"
+                              >
+                                {qty ? (
+                                  <span className="inline-flex min-w-[20px] items-center justify-center rounded bg-neutral-100 px-1.5 py-0.5 text-[11px] font-bold text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100">
+                                    {qty}
+                                  </span>
+                                ) : (
+                                  <span className="text-neutral-300 dark:text-neutral-700">
+                                    -
+                                  </span>
+                                )}
+                              </td>
+                            );
+                          })}
+                          {/* Total Bayar Ringkas */}
+                          <td className="px-2.5 py-2 text-right align-top font-semibold tabular-nums text-neutral-900 dark:text-neutral-100 leading-snug">
+                            <span className="block break-words text-[11px] sm:text-xs">
+                              Rp {order.orderTotal.toLocaleString("id-ID")}
+                            </span>
+                          </td>
+                        </tr>
                       ))}
-                      <th className="p-3 border border-black text-right min-w-[110px] text-red-600">Harga</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sessionData.tour_orders.map((order: any, idx: number) => (
-                      <tr key={order.id} className="hover:bg-[#FAFAFA] border-b border-gray-300">
-                        <td className="p-2.5 border border-gray-300 text-center font-medium">{idx + 1}</td>
-                        <td className="p-2.5 border border-gray-300 font-semibold text-[#171717]">{order.passenger_name}</td>
+                    </tbody>
+                    {/* Ringkasan Bawah */}
+                    <tfoot>
+                      <tr className="border-t-2 border-neutral-200 bg-neutral-50/80 font-semibold dark:border-neutral-800 dark:bg-neutral-900/80">
+                        <td
+                          colSpan={2}
+                          className="px-2.5 py-2.5 text-[11px] uppercase tracking-wider text-neutral-500"
+                        >
+                          Total
+                        </td>
                         {sessionData.productColumns.map((colName: string) => {
-                          const qty = order.itemMap?.[colName];
+                          const totalQty = sessionData.tour_orders.reduce(
+                            (acc: number, order: any) =>
+                              acc + (order.itemMap?.[colName] || 0),
+                            0
+                          );
                           return (
-                            <td key={colName} className="p-2.5 border border-gray-300 text-center font-bold text-[#171717]">
-                              {qty ? qty : ""}
+                            <td
+                              key={colName}
+                              className="px-1 py-2.5 text-center font-mono text-[11px] tabular-nums text-neutral-900 dark:text-neutral-100"
+                            >
+                              {totalQty > 0 ? (
+                                <span className="font-bold">{totalQty}</span>
+                              ) : (
+                                <span className="text-neutral-300 dark:text-neutral-700">-</span>
+                              )}
                             </td>
                           );
                         })}
-                        <td className="p-2.5 border border-gray-300 text-right font-bold text-red-600">
-                          {order.orderTotal.toLocaleString('id-ID')}
+                        <td className="px-2.5 py-2.5 text-right font-bold tabular-nums text-[11px] sm:text-xs text-neutral-950 dark:text-white leading-snug">
+                          Rp{" "}
+                          {sessionData.tour_orders
+                            .reduce(
+                              (acc: number, order: any) =>
+                                acc + (order.orderTotal || 0),
+                              0
+                            )
+                            .toLocaleString("id-ID")}
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </tfoot>
+                  </table>
+                </div>
               </div>
             )}
           </div>
         )}
+
 
         {/* Konten Sub-Tab 3: Detail Per Orang */}
         {activeTab === "detail" && (
