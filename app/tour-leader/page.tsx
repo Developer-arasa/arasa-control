@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Users, Plus, UserCheck, UserX, Building2, Phone, Edit2, Trash2, History, X } from "lucide-react";
+import { Users, Plus, UserCheck, UserX, Building2, Phone, Edit2, Trash2, History, X, MessageCircle } from "lucide-react";
 import { registerTourLeader, toggleStatusTL, editTourLeader, deleteTourLeader } from "./actions";
 
 
@@ -26,6 +26,20 @@ export default function TLControlPage() {
   };
 
   useEffect(() => { fetchLeaders(); }, []);
+
+  // refactored logic: bersihkan nomor HP & ubah awalan 0 jadi 62 untuk link wa.me
+  const getWhatsAppUrl = (phone: string | null, name: string) => {
+    if (!phone) return null;
+    let cleaned = phone.replace(/\D/g, "");
+    if (!cleaned) return null;
+    if (cleaned.startsWith("0")) {
+      cleaned = "62" + cleaned.substring(1);
+    } else if (cleaned.startsWith("8")) {
+      cleaned = "62" + cleaned;
+    }
+    const greeting = encodeURIComponent(`Halo Kak ${name}, kami dari Admin Arasa Store ingin mengonfirmasi terkait rombongan tur.`);
+    return `https://wa.me/${cleaned}?text=${greeting}`;
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -142,38 +156,65 @@ export default function TLControlPage() {
             <div className="divide-y divide-[#E5E5E5]/30 overflow-x-auto min-w-[300px]">
               {loading ? (
                 <div className="p-8 text-center text-[#404040]/40 text-sm">Memuat data...</div>
-              ) : leaders.map((tl) => (
-                <div key={tl.id} className="p-4 sm:p-5 hover:bg-[#FAFAFA]/50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="text-sm font-bold text-[#404040]">{tl.name}</h3>
-                      <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md ${tl.is_active === 1 ? 'bg-[#525252]/10 text-[#525252]' : 'bg-[#171717]/10 text-[#171717]'}`}>
-                        {tl.is_active === 1 ? 'Aktif' : 'Nonaktif'}
-                      </span>
+              ) : leaders.map((tl) => {
+                const waUrl = getWhatsAppUrl(tl.phone, tl.name);
+
+                return (
+                  <div key={tl.id} className="p-4 sm:p-5 hover:bg-[#FAFAFA]/50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <h3 className="text-sm font-bold text-[#404040]">{tl.name}</h3>
+                        <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md ${tl.is_active === 1 ? 'bg-[#525252]/10 text-[#525252]' : 'bg-[#171717]/10 text-[#171717]'}`}>
+                          {tl.is_active === 1 ? 'Aktif' : 'Nonaktif'}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-[#404040]/60 mt-1.5">
+                        <span className="flex items-center gap-1.5"><Building2 size={12}/> {tl.agency_name || '-'}</span>
+                        {waUrl ? (
+                          <a 
+                            href={waUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-[#00AA5B] hover:underline font-medium"
+                            title="Hubungi via WhatsApp"
+                          >
+                            <Phone size={12}/> {tl.phone}
+                          </a>
+                        ) : (
+                          <span className="flex items-center gap-1.5"><Phone size={12}/> -</span>
+                        )}
+                        <span className="font-mono bg-[#E5E5E5]/20 px-1.5 py-0.5 rounded text-[10px]">@{tl.username}</span>
+                      </div>
                     </div>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-[#404040]/60 mt-1.5">
-                      <span className="flex items-center gap-1.5"><Building2 size={12}/> {tl.agency_name || '-'}</span>
-                      <span className="flex items-center gap-1.5"><Phone size={12}/> {tl.phone || '-'}</span>
-                      <span className="font-mono bg-[#E5E5E5]/20 px-1.5 py-0.5 rounded text-[10px]">@{tl.username}</span>
+                    
+                    <div className="flex items-center gap-2">
+                      {waUrl && (
+                        <a
+                          href={waUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-[#00AA5B]/10 text-[#00AA5B] hover:bg-[#00AA5B] hover:text-white transition-colors shrink-0"
+                          title={`Chat WhatsApp ${tl.name}`}
+                        >
+                          <MessageCircle size={14} /> WA
+                        </a>
+                      )}
+                      <button onClick={() => viewHistory(tl.id, tl.name)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors shrink-0">
+                        <History size={14} /> Riwayat
+                      </button>
+                      <button onClick={() => setEditMode({ active: true, data: tl })} className="p-2 rounded-lg text-[#404040]/40 hover:text-[#171717] hover:bg-[#171717]/10 transition-colors">
+                        <Edit2 size={16} />
+                      </button>
+                      <button onClick={() => handleToggleStatus(tl.id, tl.is_active)} className="p-2 rounded-lg text-[#404040]/40 hover:text-[#525252] hover:bg-[#525252]/10 transition-colors">
+                        {tl.is_active === 1 ? <UserX size={16} /> : <UserCheck size={16} />}
+                      </button>
+                      <button onClick={() => handleDelete(tl.id)} className="p-2 rounded-lg text-[#404040]/40 hover:text-neutral-700 hover:bg-neutral-100 transition-colors">
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => viewHistory(tl.id, tl.name)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors shrink-0">
-                      <History size={14} /> Riwayat
-                    </button>
-                    <button onClick={() => setEditMode({ active: true, data: tl })} className="p-2 rounded-lg text-[#404040]/40 hover:text-[#171717] hover:bg-[#171717]/10 transition-colors">
-                      <Edit2 size={16} />
-                    </button>
-                    <button onClick={() => handleToggleStatus(tl.id, tl.is_active)} className="p-2 rounded-lg text-[#404040]/40 hover:text-[#525252] hover:bg-[#525252]/10 transition-colors">
-                      {tl.is_active === 1 ? <UserX size={16} /> : <UserCheck size={16} />}
-                    </button>
-                    <button onClick={() => handleDelete(tl.id)} className="p-2 rounded-lg text-[#404040]/40 hover:text-neutral-700 hover:bg-neutral-100 transition-colors">
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
